@@ -1,0 +1,6 @@
+*.pyc
+__pycache__/
+db.sqlite3
+.env
+venerable/  # or whatever your virtual env folder is named
+media/
