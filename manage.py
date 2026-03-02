@@ -20,3 +20,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# commit database setting up and docker-compose.yml and complete the :
+# - Dockerize development environment
+# - Define database models
