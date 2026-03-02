@@ -80,8 +80,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'shopwise_db',
         'USER': 'reaksa_dev',
-        'PASSWORD': 'postgre12345!!!!',
-        'HOST': 'localhost',
+        'PASSWORD': 'postgre12345!!!',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
