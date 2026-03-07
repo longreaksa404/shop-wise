@@ -1,33 +1,90 @@
 services:
+
+  # ── PostgreSQL Database ──────────────────────────────────────────────────────
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: shopwise-db
+    restart: unless-stopped
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=shopwise_db
-      - POSTGRES_USER=reaksa_dev
-      - POSTGRES_PASSWORD=postgre12345!!!
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
+    networks:
+      - shopwise_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # ── Redis (caching + future Celery support) ──────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: shopwise-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - shopwise_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Django REST Backend ──────────────────────────────────────────────────────
   web:
     build: .
     container_name: shopwise-web
-    command: python manage.py runserver 0.0.0.0:8000
+    restart: unless-stopped
     volumes:
-      - .:/app
+      - .:/app                          # hot-reload: code changes reflect instantly
+      - media_data:/app/media           # persist uploaded product images
+      - static_data:/app/staticfiles
     ports:
       - "8000:8000"
+    env_file:
+      - .env                            # secrets loaded from .env — NOT hardcoded here
     environment:
-      - DB_ENGINE=django.db.backends.postgresql
-      - DB_NAME=shopwise_db
-      - DB_USER=reaksa_dev
-      - DB_PASSWORD=postgre12345!!!
-      - DB_HOST=db
-      - DB_PORT=5432
+      - POSTGRES_HOST=db                # override host to point to docker service name
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy      # wait for postgres to be truly ready
+      redis:
+        condition: service_healthy
+    networks:
+      - shopwise_network
+
+  # ── pgAdmin — Database GUI (optional) ────────────────────────────────────────
+  # Start with: docker compose --profile tools up
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: shopwise-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@shopwise.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
     depends_on:
       - db
+    networks:
+      - shopwise_network
+    profiles:
+      - tools
 
+# ── Named Volumes ─────────────────────────────────────────────────────────────
 volumes:
   postgres_data:
+  media_data:
+  static_data:
+
+# ── Network ───────────────────────────────────────────────────────────────────
+networks:
+  shopwise_network:
+    driver: bridge
