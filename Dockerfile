@@ -1,32 +1,46 @@
-# 1. Use an official Python runtime (slim version keeps the image small)
+# ── Base image ────────────────────────────────────────────────────────────────
 FROM python:3.11-slim
 
-# 2. Set environment variables to prevent Python from writing .pyc files
-# and to ensure output is sent straight to terminal (useful for logs)
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# ── Environment variables ─────────────────────────────────────────────────────
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# 3. Set the working directory inside the container
-WORKDIR /app
-
-# 4. Install system dependencies for PostgreSQL (psycopg2 needs these)
-RUN apt-get update && apt-get install -y \
+# ── System dependencies (needed for psycopg2) ─────────────────────────────────
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     gcc \
-    --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-# 5. Install Python dependencies
-# Make sure you have a requirements.txt file in your root folder!
-COPY requirements.txt /app/
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# ── Create a non-root user (security best practice) ───────────────────────────
+RUN addgroup --system django && adduser --system --ingroup django django
 
-# 6. Copy the rest of your project code into the container
-COPY . /app/
+# ── Working directory ─────────────────────────────────────────────────────────
+WORKDIR /app
 
-# 7. Expose the port Django runs on
+# ── Install Python dependencies ───────────────────────────────────────────────
+# Copy requirements first so Docker cache skips this layer if deps haven't changed
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# ── Copy project source ───────────────────────────────────────────────────────
+COPY . .
+
+# ── Create required directories & set permissions ─────────────────────────────
+RUN mkdir -p /app/media /app/staticfiles \
+    && chown -R django:django /app
+
+# ── Copy entrypoint and make executable ──────────────────────────────────────
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# ── Switch to non-root user ───────────────────────────────────────────────────
+USER django
+
+# ── Expose Django dev port ────────────────────────────────────────────────────
 EXPOSE 8000
 
-# 8. Command to run the server
+# ENTRYPOINT runs migrations + collectstatic before CMD
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
