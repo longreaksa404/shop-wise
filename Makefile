@@ -41,7 +41,7 @@ logs:
 
 # ── Django ────────────────────────────────────────────────────────────────────
 startapp:
-	docker compose exec web python manage.py startapp
+	docker compose exec web python manage.py startapp $(name) apps/$(name)
 
 shell:
 	docker compose exec web python manage.py shell
