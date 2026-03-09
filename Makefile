@@ -40,6 +40,9 @@ logs:
 	docker compose logs -f web
 
 # ── Django ────────────────────────────────────────────────────────────────────
+startapp:
+	docker compose exec web python manage.py startapp
+
 shell:
 	docker compose exec web python manage.py shell
 
