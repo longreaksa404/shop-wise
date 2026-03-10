@@ -1,5 +1,4 @@
 .PHONY: help build up upd down restart logs shell bash migrate makemigrations superuser test clean tools
-
 help:
 	@echo ""
 	@echo "  ShopWise Dev Commands"
@@ -41,6 +40,7 @@ logs:
 
 # ── Django ────────────────────────────────────────────────────────────────────
 startapp:
+	mkdir -p apps/$(name)
 	docker compose exec web python manage.py startapp $(name) apps/$(name)
 
 shell:
