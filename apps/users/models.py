@@ -12,3 +12,4 @@ class UserManager(BaseUserManager):
         user.set_password(password) #hash password
         user.save(using=self._db)
         return user
+    def create_superuser(self, ema8il, username, password=None, **extra_fields):
