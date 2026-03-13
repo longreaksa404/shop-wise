@@ -46,3 +46,20 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email' # change to login with email instead of username
     REQUIRED_FIELDS = ['username']
 
+    class Meta:
+        db_table = 'user'
+        ordering = ['-created_at']
+        verbose_name = 'user'
+        verbose_name_plural = 'users'
+
+    def __str__(self):
+        return f"{self.username} ({self.role})"
+
+    def is_admin(self):
+        return self.role == User.Role.ADMIN
+
+    def is_seller(self):
+        return self.role == User.Role.SELLER
+
+    def is_buyer(self):
+        return self.role == User.Role.BUYER
