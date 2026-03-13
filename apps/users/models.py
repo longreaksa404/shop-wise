@@ -24,3 +24,25 @@ class UserManager(BaseUserManager):
             raise ValueError('Is superuser must true')
 
         return self.create_user(email, username, password, **extra_fields)
+
+class User(AbstractUser):
+    class Role(models.TextChoices):
+        ADMIN = 'admin', 'Admin'
+        SELLER = 'seller', 'Seller'
+        BUYER = 'buyer', 'Buyer'
+
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
+    role = models.CharField(max_length=10, choices=Role.choices, default=Role.BUYER)
+    phone_number = models.CharField(max_length=20, unique=True)
+    address = models.TextField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'email' # change to login with email instead of username
+    REQUIRED_FIELDS = ['username']
+
