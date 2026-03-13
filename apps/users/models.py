@@ -51,6 +51,7 @@ class User(AbstractUser):
     class Meta:
         db_table = 'user'
         ordering = ['-created_at']
+        # Set django admin panel
         verbose_name = 'user'
         verbose_name_plural = 'users'
 

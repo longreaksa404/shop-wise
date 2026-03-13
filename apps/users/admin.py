@@ -11,13 +11,13 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('-created_at',)
 
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password')}),
+        (None, {'fields': ('username', 'email', 'password')}), # not title
         ('Profile', {'fields': ('role', 'phone_number', 'address')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')})
     )
 
     add_fieldsets = (
-    (None, {'classes': ('wide',),
+    (None, {'classes': ('wide',), # for form wider (bigger)
             'fields': ('email', 'username', 'password1', 'password2', 'role')}),
     )
 
