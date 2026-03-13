@@ -1,15 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 
+
 class UserManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
         if not email:
             raise ValueError('Require email')
         if not username:
             raise ValueError('Require username')
-        email = self.normalize_email(email) # convert to lowercases email format and prevent duplicate
-        user = self.model(email=email,username=username, **extra_fields)
-        user.set_password(password) #hash password
+        email = self.normalize_email(email)  # convert to lowercases email format and prevent duplicate
+        user = self.model(email=email, username=username, **extra_fields)
+        user.set_password(password)  # hash password
         user.save(using=self._db)
         return user
 
@@ -24,6 +25,7 @@ class UserManager(BaseUserManager):
             raise ValueError('Is superuser must true')
 
         return self.create_user(email, username, password, **extra_fields)
+
 
 class User(AbstractUser):
     class Role(models.TextChoices):
@@ -43,7 +45,7 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email' # change to login with email instead of username
+    USERNAME_FIELD = 'email'  # change to log in with email instead of username
     REQUIRED_FIELDS = ['username']
 
     class Meta:
@@ -55,6 +57,7 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.username} ({self.role})"
 
+    # for call like as an attribute instead of method
     def is_admin(self):
         return self.role == User.Role.ADMIN
 
