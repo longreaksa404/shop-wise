@@ -12,4 +12,15 @@ class UserManager(BaseUserManager):
         user.set_password(password) #hash password
         user.save(using=self._db)
         return user
-    def create_superuser(self, ema8il, username, password=None, **extra_fields):
+
+    def create_superuser(self, email, username, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('role', User.Role.ADMIN)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Is staff must true')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Is superuser must true')
+
+        return self.create_user(email, username, password, **extra_fields)
