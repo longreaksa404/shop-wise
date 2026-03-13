@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
 class UserManager(BaseUserManager):
@@ -27,7 +27,7 @@ class UserManager(BaseUserManager):
         return self.create_user(email, username, password, **extra_fields)
 
 
-class User(AbstractUser):
+class User(AbstractBaseUser, PermissionsMixin):
     class Role(models.TextChoices):
         ADMIN = 'admin', 'Admin'
         SELLER = 'seller', 'Seller'
@@ -36,7 +36,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.BUYER)
-    phone_number = models.CharField(max_length=20, unique=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -59,11 +59,13 @@ class User(AbstractUser):
         return f"{self.username} ({self.role})"
 
     # for call like as an attribute instead of method
+    @property
     def is_admin(self):
         return self.role == User.Role.ADMIN
 
+    @property
     def is_seller(self):
         return self.role == User.Role.SELLER
-
+    @property
     def is_buyer(self):
         return self.role == User.Role.BUYER
