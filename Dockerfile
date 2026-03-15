@@ -13,9 +13,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# ── Create a non-root user (security best practice) ───────────────────────────
-RUN addgroup --system django && adduser --system --ingroup django django
-
 # ── Working directory ─────────────────────────────────────────────────────────
 WORKDIR /app
 
@@ -34,9 +31,6 @@ RUN mkdir -p /app/media /app/staticfiles \
 # ── Copy entrypoint and make executable ──────────────────────────────────────
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-# ── Switch to non-root user ───────────────────────────────────────────────────
-USER django
 
 # ── Expose Django dev port ────────────────────────────────────────────────────
 EXPOSE 8000

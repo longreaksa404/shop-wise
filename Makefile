@@ -49,11 +49,13 @@ shell:
 bash:
 	docker compose exec web bash
 
-migrate:
-	docker compose exec web python manage.py migrate
-
 makemigrations:
-	docker compose exec web python manage.py makemigrations
+	docker compose exec -u root web python manage.py makemigrations
+	sudo chown -R $(USER):$(USER) .
+
+migrate:
+	docker compose exec -u root web python manage.py migrate
+	sudo chown -R $(USER):$(USER) .
 
 superuser:
 	docker compose exec web python manage.py createsuperuser
