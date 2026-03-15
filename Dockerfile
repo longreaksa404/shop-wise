@@ -26,7 +26,6 @@ COPY . .
 
 # ── Create required directories & set permissions ─────────────────────────────
 RUN mkdir -p /app/media /app/staticfiles \
-    && chown -R django:django /app
 
 # ── Copy entrypoint and make executable ──────────────────────────────────────
 COPY entrypoint.sh /entrypoint.sh
