@@ -1,5 +1,5 @@
 from django.db import models
-from djoser.conf import settings
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -20,7 +20,7 @@ class Category(models.Model):
             return f'{self.parent_category.name} - {self.name}'
         return self.name
 
-class Product(models.MOdel):
+class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
