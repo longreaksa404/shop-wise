@@ -18,7 +18,7 @@ class CartItem(models.Model):
         unique_together = (('buyer', 'product'),) # prevent duplicate cart
 
     def __str__(self):
-        return f"{self.buyer.username} -> {self.product or 'deleted'} x(${self.quantity})"
+        return f"{self.buyer.username} -> {self.product or 'deleted'} x{self.quantity}"
 
 class Order(models.Model):
     class Status(models.TextChoices):
@@ -42,12 +42,12 @@ class Order(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return f"{self.buyer.username}  ${self.total_amount} | (${self.status})"
+        return f"{self.buyer.username}  ${self.total_amount} | {self.status}"
 
 class OrderItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
-    product = models.ForeignKey('products.Product', related_name='items', on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey('products.Product', related_name='order_items', on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -59,7 +59,7 @@ class OrderItem(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return f"{self.product or 'deleted'} -> {self.price} x(${self.quantity})"
+        return f"{self.product or 'deleted'} -> {self.price} x{self.quantity}"
 
     @property
     def subtotal(self):
