@@ -15,3 +15,8 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ('buyer__username',)
     readonly_fields = ('created_at', 'updated_at')
 
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('order', 'product', 'quantity', 'price', 'subtotal')
+    search_fields = ('order__buyer__username',)
+    readonly_fields = ('created_at', 'price')
