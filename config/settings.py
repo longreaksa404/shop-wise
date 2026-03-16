@@ -91,8 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # ── Internationalisation ──────────────────────────────────────────────────────
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
+TIME_ZONE = 'Asia/Phnom_Penh'
 USE_TZ = True
 
 # ── Static & Media ────────────────────────────────────────────────────────────

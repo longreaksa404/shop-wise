@@ -13,7 +13,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ('buyer', 'status', 'total_amount', 'created_at')
     list_filter = ('status',)
     search_fields = ('buyer__username',)
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at', 'status', 'total_amount')
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
