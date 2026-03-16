@@ -8,3 +8,10 @@ class CartItemAdmin(admin.ModelAdmin):
     search_fields = ('buyer__username',)
     list_filter = ('created_at',)
 
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('buyer', 'status', 'total_amount', 'created_at')
+    list_filter = ('status',)
+    search_fields = ('buyer__username',)
+    readonly_fields = ('created_at', 'updated_at')
+
