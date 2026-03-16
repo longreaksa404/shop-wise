@@ -7,7 +7,7 @@ class CartItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     buyer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='cart_items', on_delete=models.CASCADE, limit_choices_to={'role': 'buyer'})
     product = models. ForeignKey('products.Product', related_name='cart_items', on_delete=models.SET_NULL, null=True)
-    quantity = models.PositiveIntegerField(default=0)
+    quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -15,9 +15,10 @@ class CartItem(models.Model):
         verbose_name = 'CartItem'
         verbose_name_plural = 'CartItems'
         ordering = ('-created_at',)
+        unique_together = (('buyer', 'product'),) # prevent duplicate cart
 
     def __str__(self):
-        return f"{self.buyer.username} -> {self.product.name} x(${self.quantity})"
+        return f"{self.buyer.username} -> {self.product or 'deleted'} x(${self.quantity})"
 
 class Order(models.Model):
     class Status(models.TextChoices):
@@ -41,7 +42,7 @@ class Order(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return f"{self.buyer.username}  $(${self.total_amount}) | (${self.status})"
+        return f"{self.buyer.username}  ${self.total_amount} | (${self.status})"
 
 class OrderItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -58,4 +59,8 @@ class OrderItem(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return f"{self.product.name} -> {self.price} x(${self.quantity})"
+        return f"{self.product or 'deleted'} -> {self.price} x(${self.quantity})"
+
+    @property
+    def subtotal(self):
+        return self.price * self.quantity
