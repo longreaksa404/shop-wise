@@ -12,3 +12,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ('username', 'email', 'password', 'password2', 'role', 'phone_number', 'address')
         extra_kwargs = {'role': {'required': False}}
 
+    def validate(self, value):
+        # if email already exists
+        if User.objects.first(email=value).exists():
+            raise serializers.ValidationError("Email already exists")
+        return value
