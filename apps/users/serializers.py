@@ -24,3 +24,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Username already exists")
         return value
 
+    def validate_password(self, data):
+        # if pw do not match
+        if data['password'] != data['password2']:
+            raise serializers.ValidationError("Passwords don't match")
+        return data
+
