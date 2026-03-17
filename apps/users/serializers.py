@@ -30,3 +30,12 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Passwords don't match")
         return data
 
+    def create(self, validated_data):
+        # remove password2 before create user
+        validated_data.pop('password2')
+        password = validated_data.pop('password')
+
+        user = User(**validated_data)
+        user.set_password(password) # hash pw
+        user.save()
+        return user
