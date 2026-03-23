@@ -14,7 +14,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value):
         # if email already exists
-        if User.objects.first(email=value).exists():
+        if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email already exists")
         return value
 
@@ -24,7 +24,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Username already exists")
         return value
 
-    def validate_password(self, data):
+    def validate(self, data):
         # if pw do not match
         if data['password'] != data['password2']:
             raise serializers.ValidationError("Passwords don't match")
@@ -44,7 +44,7 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
 
-    def validators(self, data):
+    def validate(self, data):
         email = data.get('email')
         password = data.get('password')
 
@@ -68,5 +68,5 @@ class LoginSerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'phone_number', 'address', 'created_at')
+        fields = ('id', 'username', 'email', 'role', 'phone_number', 'address', 'created_at')
         read_only_fields = ('id', 'email', 'role', 'created_at')
