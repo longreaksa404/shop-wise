@@ -73,3 +73,24 @@ class LogoutView(APIView):
                 'error': 'invalid refresh token'
             }, status=status.HTTP_400_BAD_REQUEST)
 
+class ProfileView(APIView):
+    permission_classes = (IsAuthenticated,IsOwnerOrAdmin)
+
+    def get_object(self):
+        serializer = ProfileSerializer(self.request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get(self, request):
+        serializer = ProfileSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        # partial is allow is updating only some fields
+        serializer = ProfileSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'message': 'success',
+                'user': serializer.data
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
