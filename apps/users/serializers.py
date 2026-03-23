@@ -64,3 +64,9 @@ class LoginSerializer(serializers.Serializer):
             'access': str(refresh.access_token),
             'refresh': str(refresh)
         }
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'phone_number', 'address', 'created_at')
+        read_only_fields = ('id', 'email', 'role', 'created_at')
