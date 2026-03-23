@@ -39,3 +39,28 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(password) # hash pw
         user.save()
         return user
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+
+    def validators(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        # authenticate check email and pw
+        user = authenticate(username=email, password=password)
+
+        if not user:
+            raise serializers.ValidationError("Invalid email or password")
+        if not user.is_active:
+            raise serializers.ValidationError("This account is not active")
+
+        # generate JWT token
+        refresh = RefreshToken.for_user(user)
+
+        return {
+            'user': user,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh)
+        }
