@@ -63,7 +63,7 @@ class LogoutView(APIView):
                     'error': 'refresh token is required'
                 }, status=status.HTTP_400_BAD_REQUEST)
             token = RefreshToken(refresh_token)
-            token.blacklist()
+            token.blacklist() # invalidate the token
 
             return Response({
                 'message': 'success',
