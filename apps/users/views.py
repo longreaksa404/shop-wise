@@ -1,3 +1,4 @@
+from django.core.serializers import serialize
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -25,5 +26,28 @@ class RegisterView(APIView):
                     'username': user.username,
                     'role': user.role,
                 }
-            }), status=status.HTTP_201_CREATED
+            }, status=status.HTTP_201_CREATED),
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            user = data['user']
+            return Response({
+                'message': 'success',
+                'user': {
+                    'id': str(user.id),
+                    'email': user.email,
+                    'username': user.username,
+                    'role': user.role,
+                },
+                'token': {
+                    'access': data['access'],
+                    'refresh': data['refresh'],
+                }
+            }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
