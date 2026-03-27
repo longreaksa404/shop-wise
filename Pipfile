@@ -10,6 +10,7 @@ psycopg2-binary = "*"
 djoser = "*"
 djangorestframework-simplejwt = "*"
 python-decouple = "*"
+drf-spectacular = "*"
 
 [dev-packages]
 

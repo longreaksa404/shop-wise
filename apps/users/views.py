@@ -1,13 +1,10 @@
-from django.core.serializers import serialize
-from django.shortcuts import render
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.users.serializers import RegisterSerializer, LoginSerializer, ProfileSerializer
-from apps.users.models import User
 from apps.users.permissions import IsOwnerOrAdmin
 
 
@@ -26,7 +23,7 @@ class RegisterView(APIView):
                     'username': user.username,
                     'role': user.role,
                 }
-            }, status=status.HTTP_201_CREATED),
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
@@ -57,7 +54,7 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.data['refresh']
+            refresh_token = request.data.get('refresh')
             if not refresh_token:
                 return Response({
                     'error': 'refresh token is required'
@@ -75,10 +72,6 @@ class LogoutView(APIView):
 
 class ProfileView(APIView):
     permission_classes = (IsAuthenticated,IsOwnerOrAdmin)
-
-    def get_object(self):
-        serializer = ProfileSerializer(self.request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get(self, request):
         serializer = ProfileSerializer(request.user)
