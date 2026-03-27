@@ -25,7 +25,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 # ── Create required directories & set permissions ─────────────────────────────
-RUN mkdir -p /app/media /app/staticfiles \
+RUN mkdir -p /app/media /app/staticfiles
 
 # ── Copy entrypoint and make executable ──────────────────────────────────────
 COPY entrypoint.sh /entrypoint.sh
