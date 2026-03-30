@@ -25,7 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('api/auth/', include('apps.users.urls')),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'), # for auto-generates all requests on postman
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
