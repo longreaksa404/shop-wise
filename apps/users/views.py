@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from apps.users .throttles import LoginRateThrottle 
 
 from apps.users.serializers import RegisterSerializer, LoginSerializer, ProfileSerializer
 from apps.users.permissions import IsOwnerOrAdmin
@@ -28,6 +29,7 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     permission_classes = (AllowAny,)
+    throttle_classes = (LoginRateThrottle,)  
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
