@@ -3,6 +3,7 @@ from apps.products.models import Category, Product
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    category_name = serializers.serializerMethodField(Category)
     subcategories = serializers.SerializerMethodField()
 
     class Meta:
@@ -13,3 +14,6 @@ class CategorySerializer(serializers.ModelSerializer):
     def get_subcategories(self, obj):
         # return list of subcategory names
         return [sub.name for sub in obj.subcategories.all()]
+    
+    def __str__(self):
+        return self.category_name
