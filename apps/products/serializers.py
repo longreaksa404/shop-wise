@@ -3,7 +3,7 @@ from apps.products.models import Category, Product
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    parent_category_name = serializers.serializerMethodField()
+    parent_category_name = serializers.SerializerMethodField()
     subcategories = serializers.SerializerMethodField()
 
     class Meta:
