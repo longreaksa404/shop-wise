@@ -52,6 +52,7 @@ services:
     environment:
       - POSTGRES_HOST=db                # override host to point to docker service name
       - REDIS_URL=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=config.settings.development
     depends_on:
       db:
         condition: service_healthy      # wait for postgres to be truly ready
