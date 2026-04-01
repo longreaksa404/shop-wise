@@ -26,6 +26,7 @@ THIRD_PARTY_APPS = [
     'djoser',
     'django_filters',
     'drf_spectacular',
+    'corsheaders',
 ]
 
 LOCAL_APPS = [
@@ -38,6 +39,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 # ── Middleware ────────────────────────────────────────────────────────────────
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

@@ -5,6 +5,7 @@ djangorestframework-simplejwt==5.5.1
 
 # ── Authentication ────────────────────────────────────────────────────────────
 djoser==2.3.3
+django-cors-headers
 social-auth-app-django==5.7.0
 social-auth-core==4.8.5
 pyjwt[crypto]==2.11.0
