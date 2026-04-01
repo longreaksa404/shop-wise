@@ -90,3 +90,47 @@ class ProductListView(APIView):
                 'data': serializer.data,
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProductDetailView(APIView):
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get_object(self, pk):
+        try:
+            return Product.objects.select_related('category', 'seller').get(pk=pk)
+        except Product.DoesNotExist:
+            return None
+
+    def check_ownership(self, request, product):
+        return request.user.is_admin or product.seller == request.user
+
+    def get(self, request, pk):
+        product = self.get_object(pk)
+        if not product:
+            return Response({'message': 'Product not found.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ProductSerializer(product)
+        return Response({'message': 'success', 'data': serializer.data})
+
+    def put(self, request, pk):
+        product = self.get_object(pk)
+        if not product:
+            return Response({'message': 'Product not found.'}, status=status.HTTP_404_NOT_FOUND)
+        if not self.check_ownership(request, product):
+            return Response({'message': 'You do not have permission to edit this product.'}, status=status.HTTP_403_FORBIDDEN)
+        serializer = ProductSerializer(product, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'success', 'data': serializer.data})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        product = self.get_object(pk)
+        if not product:
+            return Response({'message': 'Product not found.'}, status=status.HTTP_404_NOT_FOUND)
+        if not self.check_ownership(request, product):
+            return Response({'message': 'You do not have permission to delete this product.'}, status=status.HTTP_403_FORBIDDEN)
+        product.delete()
+        return Response({'message': 'success'}, status=status.HTTP_204_NO_CONTENT)
