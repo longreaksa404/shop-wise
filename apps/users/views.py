@@ -74,10 +74,12 @@ class ProfileView(APIView):
     permission_classes = (IsAuthenticated,IsOwnerOrAdmin)
 
     def get(self, request):
+        self.check_object_permissions(request, request.user)  
         serializer = ProfileSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request):
+        self.check_object_permissions(request, request.user)  
         # partial is allow is updating only some fields
         serializer = ProfileSerializer(request.user, data=request.data, partial=True)
         if serializer.is_valid():
