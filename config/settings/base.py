@@ -112,9 +112,9 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day', 
-        'user': '1000/day', 
-        'login': '5/minute',
+        'anon': '100/day', # unauthenticated user has 100 request limited per day
+        'user': '1000/day', # authenticated user has 1000 request limited
+        'login': '5/minute', # 5 request per minute per IP
     },
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
