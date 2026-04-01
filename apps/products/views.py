@@ -68,3 +68,25 @@ class CategoryDetailView(APIView):
             return Response({'message': 'Category not found.'}, status=status.HTTP_404_NOT_FOUND)
         category.delete()
         return Response({'message': 'success'}, status=status.HTTP_204_NO_CONTENT)
+
+class ProductListView(APIView):
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAdminOrSeller()]
+        return [AllowAny()]
+
+    def get(self, request):
+        products = Product.objects.select_related('category', 'seller').all()
+        serializer = ProductSerializer(products, many=True)
+        return Response({'message': 'success','data': serializer.data,}, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(seller=request.user) # the request.user prevents a seller from creating products owned by someone else
+            return Response({
+                'message': 'success',
+                'data': serializer.data,
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
