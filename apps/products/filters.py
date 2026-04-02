@@ -13,8 +13,10 @@ class ProductFilter(django_filters.FilterSet):
 
     # hide sold out products
     in_stock = django_filters.BooleanFilter(method='filter_in_stock')
-    category = django_filters.NumberFilter(field_name='category__id')
 
+    # filter my name with iexact search
+    category = django_filters.CharFilter(field_name='category__name', lookup_expr='iexact')
+    
     class Meta:
         model = Product
         fields = ('price_min', 'price_max', 'in_stock', 'category')
