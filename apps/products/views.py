@@ -1,3 +1,8 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from apps.products.filters import ProductFilter
+from apps.products.pagination import ProductPagination
+
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -70,21 +75,42 @@ class CategoryDetailView(APIView):
         return Response({'message': 'success'}, status=status.HTTP_204_NO_CONTENT)
 
 class ProductListView(APIView):
+    
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = ProductFilter
+    search_fields = ['name', 'description']
+    ordering_fields = ['price', 'created_at']
+    ordering = ['-created_at']
 
     def get_permissions(self):
         if self.request.method == 'POST':
             return [IsAdminOrSeller()]
         return [AllowAny()]
 
+    # Database → [Stage 1: Filter] → [Stage 2: Paginate] → [Stage 3: Serialize] → Response
     def get(self, request):
-        products = Product.objects.select_related('category', 'seller').all()
-        serializer = ProductSerializer(products, many=True)
-        return Response({'message': 'success','data': serializer.data,}, status=status.HTTP_200_OK)
+        queryset = Product.objects.select_related('category', 'seller').all()
+
+        # loop filter cate -> product -> price
+        for backend in self.filter_backends:
+            queryset = backend().filter_queryset(request, queryset, self)
+
+        # pagination
+        paginator = ProductPagination()
+        page = paginator.paginate_queryset(queryset, request)
+        if page is not None:
+            serializer = ProductSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+
+        # fallback if pagination is disable
+        serializer = ProductSerializer(queryset, many=True)
+        return Response({'message': 'success', 'data': serializer.data})
 
     def post(self, request):
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(seller=request.user) # the request.user prevents a seller from creating products owned by someone else
+            serializer.save(seller=request.user)
             return Response({
                 'message': 'success',
                 'data': serializer.data,
