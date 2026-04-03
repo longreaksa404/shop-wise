@@ -1,6 +1,6 @@
 # ── Core Django ───────────────────────────────────────────────────────────────
 Django>=5.0,<6.0
-djangorestframework==3.16.1
+djangorestframework==3.17.1
 djangorestframework-simplejwt==5.5.1
 
 # ── Authentication ────────────────────────────────────────────────────────────
@@ -20,7 +20,7 @@ psycopg2-binary==2.9.11
 # ── API Utilities ─────────────────────────────────────────────────────────────
 python-decouple==3.8
 django-filter==24.2
-drf-spectacular==0.27.2
+drf-spectacular==0.29.0
 Pillow==10.3.0
 
 # ── Cache ─────────────────────────────────────────────────────────────────────
