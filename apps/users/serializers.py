@@ -12,6 +12,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ('username', 'email', 'password', 'password2', 'role', 'phone_number', 'address')
         extra_kwargs = {'role': {'required': False}}
 
+    def validate_role(self, value):
+        if value == User.Role.ADMIN:
+            raise serializers.ValidationError("You cannot register as admin.")
+        return value
+
     def validate_email(self, value):
         # if email already exists
         if User.objects.filter(email=value).exists():

@@ -23,7 +23,7 @@ class CategoryViewTest(APITestCase):
         self.category = Category.objects.create(name='Electronics')
 
     def _get_token(self, email, password):
-        response = self.client.post(reverse('login'), {
+        response = self.client.post(reverse('login'), { # reverse = actual path /api/auth/login/
             'email': email,
             'password': password
         })
