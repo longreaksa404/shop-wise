@@ -29,11 +29,13 @@ class CategoryViewTest(APITestCase):
         })
         return response.data['token']['access']
 
+    # everyone can browse categories
     def test_list_categories_public(self):
         response = self.client.get(reverse('category-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'success')
 
+    # only admin can create
     def test_admin_can_create_category(self):
         token = self._get_token('admin@test.com', 'testpass123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
@@ -135,6 +137,7 @@ class ProductViewTest(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    # reject negative price
     def test_invalid_price_rejected(self):
         token = self._get_token('seller@test.com', 'testpass123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
