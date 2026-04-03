@@ -6,7 +6,7 @@ from django.db import models
 class CartItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     buyer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='cart_items', on_delete=models.CASCADE, limit_choices_to={'role': 'buyer'})
-    product = models. ForeignKey('products.Product', related_name='cart_items', on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey('products.Product', related_name='cart_items', on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
 
