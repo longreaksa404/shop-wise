@@ -6,6 +6,17 @@ from apps.users.models import User
 
 class RegisterViewTest(APITestCase):
 
+    def test_cannot_register_as_admin(self):
+        data = {
+            'username': 'hacker',
+            'email': 'hacker@test.com',
+            'password': 'testpass123',
+            'password2': 'testpass123',
+            'role': 'admin'
+        }
+        response = self.client.post(reverse('register'), data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     # validate data and status return
     def test_register_success(self):
         data = {
