@@ -17,6 +17,7 @@ class RegisterViewTest(APITestCase):
         response = self.client.post(reverse('register'), data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+
     # validate data and status return
     def test_register_success(self):
         data = {
