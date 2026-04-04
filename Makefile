@@ -61,7 +61,7 @@ superuser:
 	docker compose exec web python manage.py createsuperuser
 
 test:
-	docker compose exec web python manage.py test --verbosity=2
+	docker compose exec web pytest --verbosity=2
 
 # ── Optional tools ────────────────────────────────────────────────────────────
 tools:
